@@ -1,0 +1,32 @@
+{
+  "name": "pink-noise",
+  "repo": "web-audio-components/pink-noise",
+  "description": "A simple pink noise generator",
+  "version": "0.0.1",
+  "author": "Jordan Santell <jsantell@gmail.com>",
+  "twitter": "@jsantell",
+  "keywords": [
+    "web-audio",
+    "generator",
+    "pink-noise",
+    "pink",
+    "noise",
+    "static",
+    "fuzz"
+  ],
+  "dependencies": {
+    "web-audio-components/white-noise": "*"
+  },
+  "development": {
+    "web-audio-components/rack" : "*",
+    "jsantell/allen" : "*",
+    "component/event" : "*"
+  },
+  "license": "MIT",
+  "scripts": [
+    "index.js"
+  ],
+  "web-audio": {
+    "type": "generator"
+  }
+}
