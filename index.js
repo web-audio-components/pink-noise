@@ -19,14 +19,20 @@ function PinkNoise (context, opts) {
   this.source = this.output = this.noise.source;
 }
 
+/**
+ * Takes a PinkNoise instance and applies a pink noise
+ * filter, from Paul Kellet's algorithm, and modifies
+ * the internal buffer
+ *
+ * @param {PinkNoise} module
+ */
+
 function pinkify (module) {
   var buffer = module.source.buffer,
-  b = [0,0,0,0,0,0,0], white, pink = [];
-  console.log('!');
-  for (var i = 0; i < module.channels; i++) {
-  console.log('chan');
+  b = [0,0,0,0,0,0,0], white, i, j, pink = [];
+  for (i = 0; i < module.channels; i++) {
     pink[i] = [];
-    for (var j = 0; j < module.bufferSize; j++) {
+    for (j = 0; j < module.bufferSize; j++) {
       white = buffer.getChannelData(i)[j];
       b[0] = 0.99886 * b[0] + white * 0.0555179;
       b[1] = 0.99332 * b[1] + white * 0.0750759;
@@ -39,49 +45,55 @@ function pinkify (module) {
     }
     b = [0,0,0,0,0,0,0];
   }
-
-  var t = minMax(module, pink);
+  var t = minMax(pink);
   var min = t.min;
   var max = t.max;
-  var fn = Math.abs(min) > max ? mapMin : mapMax;
-  console.log('!');
 
-  console.log(pink);
-  return;
-  // Normalize to +/- 1
-  pink.map(function (channel) {
-    return channel.map(fn);
-  });
-  console.log('!');
-
-  return;
-  // Normalize to prevent positive saturation (cannot be 1.0)
   pink.map(function (channel) {
     return channel.map(function (val) {
+      // Normalize to +/- 1
+      if (Math.abs(min) > max) {
+        val /= Math.abs(min);
+      } else {
+        val /= max;
+      }
+      // Normalize to prevent positive saturation (cannot be 1.0)
       return val / Math.abs((Math.pow(2,31) - 1) / Math.pow(2,31));
     });
   });
 
-  console.log('!');
-  for (var i = 0; i < module.channels; i++) {
-    for (var j = 0; j < module.bufferSize; j++) {
+  for (i = 0; i < module.channels; i++) {
+    for (j = 0; j < module.bufferSize; j++) {
       buffer.getChannelData(i)[j] = pink[i][j];
     }
   }
-
-  function mapMin (val) { return val / Math.abs(min); }
-  function mapMax (val) { return val / max; }
 }
+
+/**
+ * Sum function to be used in a reduction
+ *
+ * @param {Number} a
+ * @param {Number} b
+ * @return {Number}
+ */
 
 function sum (a, b) {
   return a + b;
 }
 
-function minMax (module, pink) {
-  var channels = module.channels;
+/**
+ * Takes a multidimensional array and finds the min and max
+ * from all values in all arrays. Returns both min and max
+ * to save on computation
+ *
+ * @param {Array} pink
+ * @returns {Object}
+ */
+
+function minMax (pink) {
   var min = [];
   var max = [];
-  for (var i = 0; module.channels; i++) {
+  for (var i = 0; i < pink.length; i++) {
     min.push(Math.min.apply(null, pink[i]));
     max.push(Math.max.apply(null, pink[i]));
   }
