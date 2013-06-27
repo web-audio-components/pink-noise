@@ -2,7 +2,7 @@
   "name": "pink-noise",
   "repo": "web-audio-components/pink-noise",
   "description": "A simple pink noise generator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Jordan Santell <jsantell@gmail.com>",
   "twitter": "@jsantell",
   "keywords": [
