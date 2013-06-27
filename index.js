@@ -65,18 +65,6 @@ function pinkify (module) {
 }
 
 /**
- * Sum function to be used in a reduction
- *
- * @param {Number} a
- * @param {Number} b
- * @return {Number}
- */
-
-function sum (a, b) {
-  return a + b;
-}
-
-/**
  * Takes a multidimensional array and finds the min and max
  * from all values in all arrays. Returns both min and max
  * to save on computation
